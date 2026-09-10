@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#314C3A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WenchyOS">
+  <title>WenchyOS</title>
+
+  <style>
+    :root{
+      --forest:#314C3A;
+      --moss:#687552;
+      --orange:#E86624;
+      --cream:#E9DFCC;
+      --charcoal:#34332E;
+      --card:#fffaf2;
+      --muted:#73756f;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--cream);
+      color:var(--charcoal);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      padding-bottom:calc(88px + env(safe-area-inset-bottom));
+    }
+
+    header{
+      background:var(--forest);
+      color:white;
+      padding:calc(18px + env(safe-area-inset-top)) 18px 16px;
+      position:sticky;
+      top:0;
+      z-index:20;
+      box-shadow:0 2px 14px #0002;
+    }
+
+    .brand{
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-1px;
+    }
+
+    .brand span{color:var(--orange)}
+    .sub{font-size:12px;opacity:.8}
+
+    main{
+      max-width:800px;
+      margin:auto;
+      padding:14px;
+    }
+
+    .page{display:none}
+    .page.active{display:block}
+
+    .hero,.card{
+      border-radius:20px;
+      padding:18px;
+      margin:10px 0;
+    }
+
+    .hero{
+      background:var(--forest);
+      color:white;
+    }
+
+    .card{
+      background:var(--card);
+      box-shadow:0 3px 14px #0001;
+      border:1px solid #fff;
+    }
+
+    h1,h2,h3{margin-top:0}
+    .muted{color:var(--muted)}
+
+    .warn{
+      border-left:6px solid var(--orange);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .pill{
+      display:inline-block;
+      background:var(--moss);
+      color:white;
+      border-radius:999px;
+      padding:4px 9px;
+      font-size:11px;
+      font-weight:800;
+    }
+
+    .check{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:13px 2px;
+      border-bottom:1px solid #00000010;
+    }
+
+    .check:last-child{border-bottom:0}
+
+    .check input{
+      width:26px;
+      height:26px;
+      accent-color:var(--orange);
+      flex:none;
+      margin-top:1px;
+    }
+
+    .check small{
+      display:block;
+      color:var(--muted);
+      line-height:1.35;
+      margin-top:3px;
+    }
+
+    .progress{
+      height:11px;
+      background:#0001;
+      border-radius:20px;
+      overflow:hidden;
+      margin:10px 0;
+    }
+
+    .bar{
+      height:100%;
+      background:var(--orange);
+      width:0;
+      transition:.2s;
+    }
+
+    button{font:inherit}
+
+    .reset,.primary{
+      border:0;
+      border-radius:12px;
+      padding:11px 14px;
+      font-weight:800;
+    }
+
+    .reset{background:#0001}
+    .primary{
+      background:var(--orange);
+      color:white;
+    }
+
+    .bottomnav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      background:#f7efdfeb;
+      backdrop-filter:blur(12px);
+      border-top:1px solid #0001;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      padding:7px 7px calc(7px + env(safe-area-inset-bottom));
+      z-index:30;
+    }
+
+    .bottomnav button{
+      border:0;
+      background:transparent;
+      padding:8px 2px;
+      border-radius:12px;
+      font-size:10px;
+      font-weight:800;
+      color:var(--forest);
+    }
+
+    .bottomnav button.active{
+      background:var(--orange);
+      color:white;
+    }
+
+    .sys strong{color:var(--forest)}
+
+    input[type=text],
+    input[type=number]{
+      width:100%;
+      padding:11px;
+      border:1px solid #0002;
+      border-radius:11px;
+      background:white;
+      font:inherit;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1.4fr .8fr .8fr;
+      gap:8px;
+    }
+
+    .palette{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .swatch{
+      width:84px;
+      height:72px;
+      border-radius:14px;
+      padding:8px;
+      color:white;
+      font-size:11px;
+      font-weight:800;
+      display:flex;
+      align-items:flex-end;
+    }
+
+    @media(max-width:560px){
+      .grid{grid-template-columns:1fr}
+      .row{grid-template-columns:1fr 1fr}
+      .row input:first-child{grid-column:1/-1}
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">Wenchy<span>OS</span></div>
+  <div class="sub">2019 Flagstaff MAC 205 • Field Guide</div>
+</header>
+
+<main>
+
+  <section id="home" class="page active">
+
+    <div class="hero">
+      <h1>Camp smarter. Wench responsibly.</h1>
+      <p>Your camper-specific field guide, shakedown log, and remodel tracker.</p>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <span class="pill">STATUS</span>
+        <h3>Camper operational</h3>
+        <p>First full setup and teardown completed. Everything tested so far has worked.</p>
+      </div>
+
+      <div class="card warn">
+        <span class="pill">OPEN ITEM</span>
+        <h3>Mystery Switch #2</h3>
+        <p>Knee-high double switch by door. Outside = awning LEDs. Inside = TBD.</p>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h2>Known quirks</h2>
+
+      <p>🪩 Rope lights are stuck in <b>Dance Party Mode</b>. Preserve the ability to party.</p>
+
+      <p>💡 Folding the galley/sink down cuts the interior light circuit.</p>
+
+      <p>⚡ WFCO WF-8735P power center: 30A main, 15A / 15A / 20A branches, 13.6V 35A converter.</p>
+
+      <p>🛏️ Paired black bunk supports attach immediately under the bunks to the camper shell/frame brackets.</p>
+
+      <p>🔋 Wenchy successfully lowered the roof on battery power alone.</p>
+    </div>
+
+  </section>
+
+  <section id="setup" class="page">
+
+    <div class="hero">
+      <h1>Setup</h1>
+      <p>Draft checklist. We'll refine this the next time the camper goes up.</p>
+    </div>
+
+    <div id="setupProgress" class="progress">
+      <div class="bar"></div>
+    </div>
+
+    <div id="setupList" class="card"></div>
+
+    <button class="reset" onclick="resetChecks('setup')">
+      Reset setup
+    </button>
+
+  </section>
+
+  <section id="teardown" class="page">
+
+    <div class="hero">
+      <h1>Wenchy Downy</h1>
+      <p>Your actual first successful teardown procedure.</p>
+    </div>
+
+    <div class="card warn">
+      <b>STOP RULE:</b>
+      If something suddenly requires much more force than before, stop and find the obstruction.
+    </div>
+
+    <div id="downProgress" class="progress">
+      <div class="bar"></div>
+    </div>
+
+    <div id="downList" class="card"></div>
+
+    <button class="reset" onclick="resetChecks('down')">
+      Reset teardown
+    </button>
+
+  </section>
+
+  <section id="systems" class="page">
+
+    <div class="hero">
+      <h1>Systems</h1>
+      <p>What we know, what works, and what still needs exploring.</p>
+    </div>
+
+    <div class="grid">
+
+      <div class="card sys">
+        <strong>⚡ Electrical</strong>
+        <p>WFCO WF-8735P. Shore power works. Battery successfully lowered roof. Push lights and exhaust fan work.</p>
+      </div>
+
+      <div class="card sys">
+        <strong>💧 Water</strong>
+        <p>Gravity fill, city inlet, fresh tank, hot/cold low-point drains, and antifreeze pickup identified. Full commissioning pending.</p>
+      </div>
+
+      <div class="card sys">
+        <strong>🔥 Water heater</strong>
+        <p>Propane water heater identified. Do not fire until the tank is confirmed full.</p>
+      </div>
+
+      <div class="card sys">
+        <strong>♨️ Furnace</strong>
+        <p>Exterior combustion/exhaust vent located. Operational test pending.</p>
+      </div>
+
+      <div class="card sys">
+        <strong>❄️ A/C</strong>
+        <p>Powers on. Sustained compressor/cooling test pending.</p>
+      </div>
+
+      <div class="card sys">
+        <strong>🚽 Cassette toilet</strong>
+        <p>Needs full walkthrough before any bathroom-delete decision.</p>
+      </div>
+
+      <div class="card sys">
+        <strong>🚿 Shower</strong>
+        <p>Indoor hot/cold plumbing access identified. Outdoor shower door/key issue still open.</p>
+      </div>
+
+      <div class="card sys">
+        <strong>🪩 Rope lights</strong>
+        <p>Working. Controller/remote missing. Preserve Dance Party Mode.</p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section id="remodel" class="page">
+
+    <div class="hero">
+      <h1>2027 Refresh</h1>
+      <p>Earthy green + vibrant orange. Better, not heavier.</p>
+    </div>
+
+    <div class="card">
+      <h2>Palette</h2>
+
+      <div class="palette">
+
+        <div class="swatch" style="background:#314C3A">
+          Forest<br>#314C3A
+        </div>
+
+        <div class="swatch" style="background:#687552">
+          Moss<br>#687552
+        </div>
+
+        <div class="swatch" style="background:#E86624">
+          Orange<br>#E86624
+        </div>
+
+        <div class="swatch" style="background:#B68A5A">
+          Camel<br>#B68A5A
+        </div>
+
+        <div class="swatch" style="background:#34332E">
+          Charcoal<br>#34332E
+        </div>
+
+        <div class="swatch"
+             style="background:#E9DFCC;color:#34332E;border:1px solid #0001">
+          Canvas<br>#E9DFCC
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Priority projects</h2>
+
+      <p>
+        Big-bunk mattress • curtains/trim • recover dinette cushions •
+        lightweight warm wood-look floor • canvas clean/waterproof • roof reseal.
+      </p>
+    </div>
+
+    <div class="card">
+
+      <h2>Weight ledger</h2>
+
+      <div class="row">
+
+        <input id="item"
+               type="text"
+               placeholder="Item">
+
+        <input id="removed"
+               type="number"
+               step=".1"
+               placeholder="lb removed">
+
+        <input id="added"
+               type="number"
+               step=".1"
+               placeholder="lb added">
+
+      </div>
+
+      <button class="primary"
+              style="margin-top:9px"
+              onclick="addWeight()">
+        Add item
+      </button>
+
+      <div id="ledger"></div>
+
+      <h3 id="net">
+        Net change: 0 lb
+      </h3>
+
+    </div>
+
+  </section>
+
+</main>
+
+<nav class="bottomnav">
+
+  <button class="nav active"
+          data-page="home">
+    HOME
+  </button>
+
+  <button class="nav"
+          data-page="setup">
+    SETUP
+  </button>
+
+  <button class="nav"
+          data-page="teardown">
+    TEARDOWN
+  </button>
+
+  <button class="nav"
+          data-page="systems">
+    SYSTEMS
+  </button>
+
+  <button class="nav"
+          data-page="remodel">
+    REMODEL
+  </button>
+
+</nav>
+
+<script>
+
+const setup = [
+
+  [
+    "Level and stabilize",
+    "Confirm the camper is level before deploying."
+  ],
+
+  [
+    "Unlatch roof",
+    "Verify every roof latch is released."
+  ],
+
+  [
+    "WENCH UPPY",
+    "Raise roof while watching all four corners."
+  ],
+
+  [
+    "Install roof side supports x2",
+    "Install the safety/support posts."
+  ],
+
+  [
+    "Deploy bunks",
+    "Slide bunk platforms fully out."
+  ],
+
+  [
+    "Install exterior bunk supports",
+    "Attach paired black support assemblies under the bunks."
+  ],
+
+  [
+    "Install interior bunk/canvas poles",
+    "Tension bunk-end canvas."
+  ],
+
+  [
+    "Deploy entry door",
+    "Bring ceiling-stowed door into position."
+  ],
+
+  [
+    "Raise galley/sink",
+    "Interior light circuit should become active."
+  ],
+
+  [
+    "Connect shore power as needed",
+    "Verify adapter/cord and manage heavy loads."
+  ],
+
+  [
+    "Final walk-around",
+    "Canvas, supports, steps, awning and compartments."
+  ]
+
+];
+
+
+const down = [
+
+  [
+    "Power down nonessential equipment",
+    "A/C and exhaust fan OFF. Leave only lights as needed."
+  ],
+
+  [
+    "Close roof vent",
+    "Explicit pre-lowering check."
+  ],
+
+  [
+    "Prep dinette",
+    "Remove cushions as needed; table onto travel brackets; store legs."
+  ],
+
+  [
+    "Stow loose items",
+    "Shower hose and small items secured; counters completely clear."
+  ],
+
+  [
+    "Remove interior bunk/canvas poles",
+    "Release bunk-end canvas tension."
+  ],
+
+  [
+    "Stow entry door at ceiling",
+    "Can happen earlier depending on weather or bugs."
+  ],
+
+  [
+    "Fold galley/sink",
+    "Interior lights should cut out via the safety interlock."
+  ],
+
+  [
+    "Turn OFF all AC breakers",
+    "All four breakers OFF."
+  ],
+
+  [
+    "Remove exterior bed supports",
+    "Black support assemblies out before bunks roll in."
+  ],
+
+  [
+    "Roll bunks in",
+    "Manage canvas carefully as platforms retract."
+  ],
+
+  [
+    "Unplug shore power",
+    "Stow cord and adapter."
+  ],
+
+  [
+    "Put stairs in",
+    "Secure step for storage."
+  ],
+
+  [
+    "REMOVE ROOF SIDE SUPPORTS x2",
+    "CRITICAL before operating the roof lift."
+  ],
+
+  [
+    "WENCH DOWNY — halfway",
+    "Lower slowly while watching all four corners."
+  ],
+
+  [
+    "Roll/stow awning",
+    "Half-height is the easier working position."
+  ],
+
+  [
+    "Tuck canvas and vinyl",
+    "Keep material clear of lift posts and pinch points."
+  ],
+
+  [
+    "WENCH DOWNY — finish",
+    "Stop for unusual resistance, uneven descent or trapped fabric."
+  ],
+
+  [
+    "Final canvas check",
+    "Tuck remaining material and verify roof sits evenly."
+  ],
+
+  [
+    "Latch roof",
+    "Secure all roof latches without excessive force."
+  ],
+
+  [
+    "Final exterior check",
+    "Doors, lights, awning, cord and step secure. Jacks may remain down while parked."
+  ]
+
+];
+
+
+function renderChecklist(list,id,key){
+
+  const el = document.getElementById(id);
+
+  el.innerHTML = "";
+
+  list.forEach((x,i)=>{
+
+    const label = document.createElement("label");
+
+    label.className = "check";
+
+    label.innerHTML = `
+      <input type="checkbox"
+             data-key="${key}-${i}">
+
+      <span>
+        <b>${i+1}. ${x[0]}</b>
+        <small>${x[1]}</small>
+      </span>
+    `;
+
+    el.appendChild(label);
+
+  });
+
+  document.querySelectorAll(
+    `input[data-key^="${key}-"]`
+  ).forEach(c=>{
+
+    c.checked =
+      localStorage.getItem(c.dataset.key) === "1";
+
+    c.addEventListener(
+      "change",
+      ()=>{
+
+        localStorage.setItem(
+          c.dataset.key,
+          c.checked ? "1" : "0"
+        );
+
+        updateProgress(key);
+
+      }
+    );
+
+  });
+
+  updateProgress(key);
+
+}
+
+
+function updateProgress(key){
+
+  const checks = [
+    ...document.querySelectorAll(
+      `input[data-key^="${key}-"]`
+    )
+  ];
+
+  const pct = checks.length
+    ? 100 * checks.filter(x=>x.checked).length / checks.length
+    : 0;
+
+  const progressID =
+    key === "down"
+    ? "downProgress"
+    : "setupProgress";
+
+  const bar =
+    document.querySelector(
+      `#${progressID} .bar`
+    );
+
+  if(bar){
+    bar.style.width = pct + "%";
+  }
+
+}
+
+
+function resetChecks(key){
+
+  document.querySelectorAll(
+    `input[data-key^="${key}-"]`
+  ).forEach(c=>{
+
+    c.checked = false;
+
+    localStorage.removeItem(
+      c.dataset.key
+    );
+
+  });
+
+  updateProgress(key);
+
+}
+
+
+document.querySelectorAll(".nav").forEach(b=>{
+
+  b.addEventListener("click",()=>{
+
+    document.querySelectorAll(
+      ".nav,.page"
+    ).forEach(x=>
+      x.classList.remove("active")
+    );
+
+    b.classList.add("active");
+
+    document
+      .getElementById(
+        b.dataset.page
+      )
+      .classList
+      .add("active");
+
+    window.scrollTo({
+      top:0,
+      behavior:"instant"
+    });
+
+  });
+
+});
+
+
+renderChecklist(
+  setup,
+  "setupList",
+  "setup"
+);
+
+renderChecklist(
+  down,
+  "downList",
+  "down"
+);
+
+
+let weights =
+  JSON.parse(
+    localStorage.getItem("weights") || "[]"
+  );
+
+
+function drawWeights(){
+
+  const ledger =
+    document.getElementById("ledger");
+
+  ledger.innerHTML =
+    weights.map((w,i)=>`
+
+      <p>
+
+        ${w.item}:
+
+        −${w.removed} lb /
+
+        +${w.added} lb
+
+        =
+
+        <b>
+          ${(w.added-w.removed).toFixed(1)} lb
+        </b>
+
+        <button
+          onclick="deleteWeight(${i})">
+          ×
+        </button>
+
+      </p>
+
+    `).join("");
+
+
+  const net =
+    weights.reduce(
+      (s,w)=>
+        s + w.added - w.removed,
+      0
+    );
+
+
+  document
+    .getElementById("net")
+    .textContent =
+      `Net change: ${net.toFixed(1)} lb`;
+
+}
+
+
+function addWeight(){
+
+  const item =
+    document
+      .getElementById("item")
+      .value || "Unnamed";
+
+
+  const removed =
+    +document
+      .getElementById("removed")
+      .value || 0;
+
+
+  const added =
+    +document
+      .getElementById("added")
+      .value || 0;
+
+
+  weights.push({
+    item,
+    removed,
+    added
+  });
+
+
+  localStorage.setItem(
+    "weights",
+    JSON.stringify(weights)
+  );
+
+
+  drawWeights();
+
+}
+
+
+function deleteWeight(i){
+
+  weights.splice(i,1);
+
+  localStorage.setItem(
+    "weights",
+    JSON.stringify(weights)
+  );
+
+  drawWeights();
+
+}
+
+
+drawWeights();
+
+</script>
+
+</body>
+</html>
